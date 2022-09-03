@@ -33,7 +33,7 @@ public class Character : MonoBehaviour
         
     }
 
-    [CheatCode("damage", "deals 5 dmg to character", "{int}")]
+    [CheatCode("damage", "deals damage to character")]
     public void Damage(int amount)
     {
         currentHP -= amount;

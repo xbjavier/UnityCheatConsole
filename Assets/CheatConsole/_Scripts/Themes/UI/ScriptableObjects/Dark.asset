@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7f2b1935294e9640b4ae01d2232dd09, type: 3}
+  m_Name: Dark
+  m_EditorClassIdentifier: 
+  Background: {r: 0.10196079, g: 0.121568635, b: 0.13333334, a: 0.8039216}
+  Primary: {r: 0.47450984, g: 0.6117647, b: 0.6784314, a: 1}
+  Secondary: {r: 0.9607844, g: 0.9725491, b: 0.97647065, a: 1}
+  CommandInput: {r: 0.49411768, g: 0.63529414, b: 0.7058824, a: 1}
+  CommandPlaceHolder: {r: 0.49411768, g: 0.63529414, b: 0.7058824, a: 0.5019608}
+  CommandOutput: {r: 0.49411768, g: 0.63529414, b: 0.7058824, a: 1}
+  CommandError: {r: 1, g: 0.33490568, b: 0.33490568, a: 1}
+  CommandExecuted: {r: 0.54196537, g: 1, b: 0.514151, a: 1}

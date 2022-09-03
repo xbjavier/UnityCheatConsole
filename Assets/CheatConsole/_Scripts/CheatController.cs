@@ -8,45 +8,48 @@ using System.Reflection;
 
 public static class CheatController
 {
-    private static Dictionary<string, object> cheats = new Dictionary<string, object>();
+    private static Dictionary<string, List<object>> cheats = new Dictionary<string, List<object>>();
 
-    public static Dictionary<string, object> Cheats => cheats;
+    public static Dictionary<string, List<object>> Cheats => cheats;
 
     //TODO: Fix command format to display behaviour id.
     [System.Diagnostics.Conditional("ENABLE_CHEATS")]
     public static void AddCheatsFromBehaviour(MonoBehaviour behaviour)
     {
-       var methods = GetMethods(behaviour);
+        var methods = GetMethods(behaviour);
 
         if (methods.Length == 0) return;
 
-        for(int i = 0; i < methods.Length; i++)
+        for (int i = 0; i < methods.Length; i++)
         {
             var attributes = methods[i].GetCustomAttributes(typeof(CheatCode), false);
-            for(int j = 0; j < attributes.Length; j++)
+            for (int j = 0; j < attributes.Length; j++)
             {
                 CustomAttributeData data = methods[i].CustomAttributes.ElementAt(j);
                 if (data.AttributeType != typeof(CheatCode)) continue;
 
-                string id = GenerateCheatId(behaviour, data);
-                string methodName = methods[i].Name;
-               
-                if(data.ConstructorArguments.Count() == 3)
-                {
-                    CheatCommand command = new CheatCommand(id, 
-                        data.ConstructorArguments.ElementAt(1).Value.ToString(),
-                        $"{id} {data.ConstructorArguments.ElementAt(2).Value.ToString()}",
-                        behaviour,
-                        methods[i]);
+                string id = data.ConstructorArguments.ElementAt(0).Value.ToString();
 
-                    if (!cheats.ContainsKey(id))
-                    {
-                        cheats.Add(id, command);
-                    }
+
+
+                CheatCommand command = new CheatCommand(
+                    id,
+                    data.ConstructorArguments.ElementAt(1).Value.ToString(),
+                    behaviour,
+                    methods[i]);
+
+                if (!cheats.ContainsKey(id))
+                {
+                    cheats.Add(id, new List<object>() { command });
                 }
+                else
+                {
+                    cheats[id].Add(command);
+                }
+
             }
         }
-       
+
     }
 
     [System.Diagnostics.Conditional("ENABLE_CHEATS")]
@@ -70,7 +73,7 @@ public static class CheatController
                 if (cheats.ContainsKey(id))
                 {
                     cheats.Remove(id);
-                } 
+                }
             }
         }
     }
@@ -78,32 +81,45 @@ public static class CheatController
     [System.Diagnostics.Conditional("ENABLE_CHEATS")]
     public static void RunCheat(string cheatName, string arg = null)
     {
-        if (!cheats.ContainsKey(cheatName)) return;
 
-        if (string.IsNullOrEmpty(arg))
-        {
-            (cheats[cheatName] as CheatCommand).Invoke();
-        }
-        else
-        {
-            float valFloat = 0.0f;
-            bool castToFloat = float.TryParse(arg, out valFloat);
-
-            if (castToFloat)
-            {
-                (cheats[cheatName] as CheatCommand<float>).Invoke(valFloat);
-                return;
-            }
-
-            int valInt = 0;
-            bool castToInt = int.TryParse(arg, out valInt);
-            if (castToInt)
-            {
-                (cheats[cheatName] as CheatCommand<int>).Invoke(valInt);
-                return;
-            }
-        }
     }
+
+    //[System.Diagnostics.Conditional("ENABLE_CHEATS")]
+    //public static void RunCheat(string cheatName, string arg = null)
+    //{
+    //    if (!cheats.ContainsKey(cheatName)) return;
+
+    //    if (string.IsNullOrEmpty(arg))
+    //    {
+    //        (cheats[cheatName] as CheatCommand).Invoke();
+    //    }
+    //    else
+    //    {
+    //        float valFloat = 0.0f;
+    //        bool castToFloat = float.TryParse(arg, out valFloat);
+
+    //        if (castToFloat)
+    //        {
+    //            (cheats[cheatName] as CheatCommand<float>).Invoke(valFloat);
+    //            return;
+    //        }
+
+    //        int valInt = 0;
+    //        bool castToInt = int.TryParse(arg, out valInt);
+    //        if (castToInt)
+    //        {
+    //            (cheats[cheatName] as CheatCommand<int>).Invoke(valInt);
+    //            return;
+    //        }
+    //    }
+    //}
+
+    //[System.Diagnostics.Conditional("ENABLE_CHEATS")]
+    //public static void ShowObjectsThatCanRunCheat(string cheatName, out string[] gameObjects)
+    //{
+    //    gameObjects = cheats[cheatName].Select(c => (c as CheatCommandBase).GameObjectName).ToArray();
+    //}
+
 
     private static string GenerateCheatId(MonoBehaviour behaviour, CustomAttributeData data)
     {
@@ -125,15 +141,15 @@ public static class CheatController
 
 public class CheatCode : System.Attribute
 {
-    public CheatCode(string name, string description, string commandFormat)
+    public CheatCode(string name, string description)
     {
     }
 
-    public CheatCode(string name, string description, string commandFormat, int arg)
+    public CheatCode(string name, string description, int arg)
     {
     }
 
-    public CheatCode(string name, string description, string commandFormat, float arg)
+    public CheatCode(string name, string description, float arg)
     {
     }
 
