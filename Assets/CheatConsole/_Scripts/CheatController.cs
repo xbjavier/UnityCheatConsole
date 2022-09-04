@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using System.Reflection;
+using System.ComponentModel;
 
 
 
 public static class CheatController
 {
-    private static Dictionary<string, List<object>> cheats = new Dictionary<string, List<object>>();
+    private static Dictionary<string, MethodInstance> cheats = new Dictionary<string, MethodInstance>();    
 
-    public static Dictionary<string, List<object>> Cheats => cheats;
+    public static Dictionary<string, MethodInstance> Cheats => cheats;
 
     //TODO: Fix command format to display behaviour id.
     [System.Diagnostics.Conditional("ENABLE_CHEATS")]
@@ -25,6 +26,8 @@ public static class CheatController
             var attributes = methods[i].GetCustomAttributes(typeof(CheatCode), false);
             for (int j = 0; j < attributes.Length; j++)
             {
+                //methods[i].GetBaseDefinition().GetParameters()[0].ParameterType
+
                 CustomAttributeData data = methods[i].CustomAttributes.ElementAt(j);
                 if (data.AttributeType != typeof(CheatCode)) continue;
 
@@ -32,21 +35,17 @@ public static class CheatController
 
 
 
-                CheatCommand command = new CheatCommand(
+                CheatCommandBase command = new CheatCommandBase(
                     id,
-                    data.ConstructorArguments.ElementAt(1).Value.ToString(),
-                    behaviour,
-                    methods[i]);
+                    data.ConstructorArguments.ElementAt(1).Value.ToString());
 
                 if (!cheats.ContainsKey(id))
                 {
-                    cheats.Add(id, new List<object>() { command });
-                }
-                else
-                {
-                    cheats[id].Add(command);
+                    cheats.Add(id, new MethodInstance(methods[i], command));
                 }
 
+                cheats[id].AddInstance(behaviour);
+                
             }
         }
 
@@ -133,9 +132,52 @@ public static class CheatController
                 BindingFlags.NonPublic |
                 BindingFlags.Static |
                 BindingFlags.Default |
-                BindingFlags.Instance)
+                BindingFlags.Instance |
+                BindingFlags.FlattenHierarchy)
                .Where(m => m.GetCustomAttributes(typeof(CheatCode), false).Length > 0)
                .ToArray();
+    }
+
+    public static object[] ParamConverter(ParameterInfo[] required, string[] current)
+    {
+        object[] result = new object[required.Length];
+
+        for (int i = 0; i < required.Length; i++)
+        {
+            TypeConverter typeConverter = TypeDescriptor.GetConverter(required[i].ParameterType);
+            result[i] = typeConverter.ConvertFromString(current[i]);
+        }
+        return result;
+    }
+
+    public static void RunCheat(string cheat, string[] invokeParams, string instance)
+    {
+        if (string.IsNullOrEmpty(cheat)) return;
+
+        MethodInfo methodInfo = cheats[cheat].MethodInfo;
+        ParameterInfo[] parametersInfo = methodInfo.GetBaseDefinition().GetParameters();
+
+        object[] parameters = ParamConverter(parametersInfo, invokeParams);
+
+
+        if (string.IsNullOrEmpty(instance))
+        {
+            for (int i = 0; i < cheats[cheat].Instances.Count; i++)
+            {
+                cheats[cheat].MethodInfo.Invoke(cheats[cheat].Instances[i], parameters);
+            }
+        }
+        else
+        {
+            for (int i = 0; i < cheats[cheat].Instances.Count; i++)
+            {
+                if (cheats[cheat].Instances[i].gameObject.name != instance)
+                    continue;
+
+                cheats[cheat].MethodInfo.Invoke(cheats[cheat].Instances[i], parameters);
+                break;
+            }
+        }
     }
 }
 
@@ -169,6 +211,30 @@ public class Cheat
         this.command = command;
     }
 }
+
+public class MethodInstance
+{
+    private MethodInfo method;
+    private CheatCommandBase cheatCommand;
+    private List<MonoBehaviour> instances;
+
+    public MethodInfo MethodInfo => method;
+    public CheatCommandBase CheatCommand => cheatCommand;
+    public List<MonoBehaviour> Instances => instances;
+
+    public MethodInstance(MethodInfo method, CheatCommandBase cheatCommand)
+    {
+        this.method = method;
+        this.instances = new List<MonoBehaviour>();
+        this.cheatCommand = cheatCommand;
+    }
+
+    public void AddInstance(MonoBehaviour instance)
+    {
+        instances.Add(instance);
+    }
+}
+
 
 
 

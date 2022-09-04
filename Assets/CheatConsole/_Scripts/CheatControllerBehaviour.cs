@@ -10,6 +10,8 @@ public class CheatControllerBehaviour : MonoBehaviour
     public KeyCode Action_Cheats;
     public KeyCode Action_EnterCheat;
 
+    protected bool show;
+
     [Space(10)]
     [Header("Events")]
     public UnityEvent OnCommandSubmitted;
@@ -24,7 +26,28 @@ public class CheatControllerBehaviour : MonoBehaviour
         CheatController.RemoveCheatBehaviour(this);
     }
 
-    protected List<object> GetcommandInstances(string command)
+    protected virtual void Update()
+    {
+        ReadInput();
+    }
+    protected virtual void ReadInput()
+    {
+        if (Input.GetKeyDown(Action_Cheats))
+        {
+            Toggle();
+        }
+        else if (Input.GetKeyDown(Action_EnterCheat))
+        {
+            SubmitCommand();
+        }
+    }
+
+    public virtual void SubmitCommand()
+    {
+
+    }
+
+    protected MethodInstance GetcommandInstances(string command)
     {
         if (string.IsNullOrEmpty(command) ||
             !CheatController.Cheats.ContainsKey(command))
@@ -34,8 +57,12 @@ public class CheatControllerBehaviour : MonoBehaviour
     }
 
     [CheatCode("help", "Displays help for commands")]
-    protected bool CheatsHelp()
+    protected virtual void CheatsHelp()
     {
-        return false;
+    }
+
+    protected virtual void Toggle()
+    {
+        show = !show;
     }
 }

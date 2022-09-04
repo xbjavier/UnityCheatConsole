@@ -1,14 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.Events;
 using System.Text;
 using TMPro;
 
 public class CheatControllerUI : CheatControllerBehaviour
 {
+    [SerializeField] GameObject panel;
     [SerializeField] TextMeshProUGUI previousCommands;
     [SerializeField] TMP_InputField inputCommand;
+    [SerializeField] Button submitButton;
 
     [SerializeField] ThemeSO theme;
 
@@ -17,6 +20,7 @@ public class CheatControllerUI : CheatControllerBehaviour
     ColorThemePicker[] pickers;
     string errorColor;
     string inputColor;
+    string commandSuccessColor;
 
     protected override void OnEnable()
     {
@@ -31,34 +35,83 @@ public class CheatControllerUI : CheatControllerBehaviour
 
         inputColor = GetHexString(theme.CommandInput);
         errorColor = GetHexString(theme.CommandError);
+        commandSuccessColor = GetHexString(theme.CommandExecuted);
+        submitButton.onClick.AddListener(() => SubmitCommand());
 
     }
 
     //TODO: Display instances for command, if command includes . assume instance is second param.
-    public void SubmitCommand()
+    public override void SubmitCommand()
     {
-        if (string.IsNullOrEmpty(inputCommand.text)) return;
 
-        List<object> commandInstances = GetcommandInstances(inputCommand.text);
+        string[] inputs = inputCommand.text.Split('#');
 
-        if (commandInstances == null || commandInstances.Count == 0)
+        string inputCmd = inputs[0] ?? null;
+        string inputParams = inputs.Length > 1 ? inputs[1] : null;
+
+        string[] commandSteps = inputCmd.Split('.');
+
+        string command = commandSteps[0] ?? null;
+        string instance = commandSteps.Length > 1 ? commandSteps[1] : null;
+
+        string[] parameters = inputParams != null ? inputParams.Split(' ') : null;
+
+        if (string.IsNullOrEmpty(command)) return;
+
+        AppendInfo($"{command}");
+
+        MethodInstance methodInstance = GetcommandInstances(command);
+        if (methodInstance == null)
         {
-            listOfCommands.Append($"<color=#{errorColor}>Command not found\n<color=#{inputColor}>");
+            AppendError($"Command not found");
         }
         else
         {
-            listOfCommands.Append($"{inputCommand.text}\n");
+            CheatController.RunCheat(command, parameters, instance);
+            AppendSuccess("Completed!");
         }
 
-        
         previousCommands.text = listOfCommands.ToString();
         inputCommand.text = string.Empty;
-        OnCommandSubmitted?.Invoke();
+        inputCommand.Select();
+    }
+
+    protected void AppendError(string msg)
+    {
+        listOfCommands.AppendLine($"<color=#{errorColor}>{msg}<color=#{inputColor}>");
+    }
+
+    protected void AppendSuccess(string msg)
+    {
+        listOfCommands.AppendLine($"<color=#{commandSuccessColor}>{msg}<color=#{inputColor}>");
+    }
+
+    protected void AppendInfo(string msg)
+    {
+        listOfCommands.AppendLine($"<color=#{inputColor}>{msg}<color=#{inputColor}>");
     }
 
     protected string GetHexString(Color color)
     {
         return ColorUtility.ToHtmlStringRGBA(color);
     }
-    
+
+    [CheatCode("help", "Displays help for commands")]
+    protected override void CheatsHelp()
+    {
+        AppendInfo("############### CHEATS HELP ##################");
+        foreach(var key in CheatController.Cheats.Keys)
+        {
+            listOfCommands.Append($"<color=#{commandSuccessColor}>{key} - {CheatController.Cheats[key].CheatCommand.CommandDescription}\n");
+        }
+        AppendInfo("##############################################");
+        listOfCommands.Append($"<color=#{inputColor}>");
+        previousCommands.text = listOfCommands.ToString();
+    }
+
+    protected override void Toggle()
+    {
+        base.Toggle();
+        panel.SetActive(show);
+    }
 }

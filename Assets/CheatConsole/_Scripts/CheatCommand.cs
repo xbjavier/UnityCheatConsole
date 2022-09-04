@@ -17,11 +17,10 @@ public class CheatCommandBase
 
     public string GameObjectName => CommandMonoBehaviour.gameObject.name;
 
-    public CheatCommandBase(string id, string description, MonoBehaviour behaviour)
+    public CheatCommandBase(string id, string description)
     {
         commandId = id;
         commandDescription = description;
-        commandMonobehaviour = behaviour;
     }
 }
 
@@ -29,7 +28,7 @@ public class CheatCommand : CheatCommandBase
 {
     
     private System.Reflection.MethodInfo method;
-    public CheatCommand(string id, string description, MonoBehaviour monoBehaviour, System.Reflection.MethodInfo method) : base(id, description, monoBehaviour)
+    public CheatCommand(string id, string description, MonoBehaviour monoBehaviour, System.Reflection.MethodInfo method) : base(id, description)
     {
         this.method = method;
     }
