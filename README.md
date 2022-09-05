@@ -4,6 +4,7 @@ This is a personal project that aims to have an easy way to input "cheats" into 
 
 ## How to install
 Just download the unitypackage and open it from unity or double click to get Unity open it for you.
+https://github.com/xbjavier/UnityCheatConsole/releases
 
 ## How to use
 First you need to add the prefab called: "CheatsConsole" to your scene.
