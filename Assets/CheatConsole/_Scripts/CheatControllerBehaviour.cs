@@ -5,64 +5,70 @@ using UnityEngine;
 using UnityEngine.Events;
 using System.Linq;
 
-public class CheatControllerBehaviour : MonoBehaviour
+namespace UnityCheatConsole
 {
-    public KeyCode Action_Cheats;
-    public KeyCode Action_EnterCheat;
 
-    protected bool show;
-
-    [Space(10)]
-    [Header("Events")]
-    public UnityEvent OnCommandSubmitted;
-
-    protected virtual void OnEnable()
+    public class CheatControllerBehaviour : MonoBehaviour
     {
-        CheatController.AddCheatsFromBehaviour(this);
-    }
+        public KeyCode Action_Cheats;
+        public KeyCode Action_EnterCheat;
 
-    protected virtual void OnDisable()
-    {
-        CheatController.RemoveCheatBehaviour(this);
-    }
+        protected bool show;
 
-    protected virtual void Update()
-    {
-        ReadInput();
-    }
-    protected virtual void ReadInput()
-    {
-        if (Input.GetKeyDown(Action_Cheats))
+        [Space(10)]
+        [Header("Events")]
+        public UnityEvent OnCommandSubmitted;
+
+        protected virtual void OnEnable()
         {
-            Toggle();
+            CheatController.AddCheatsFromBehaviour(this);
         }
-        else if (Input.GetKeyDown(Action_EnterCheat))
+
+        protected virtual void OnDisable()
         {
-            SubmitCommand();
+            CheatController.RemoveCheatBehaviour(this);
         }
-    }
 
-    public virtual void SubmitCommand()
-    {
+        protected virtual void Update()
+        {
+            ReadInput();
+        }
+        protected virtual void ReadInput()
+        {
+            if (Input.GetKeyDown(Action_Cheats))
+            {
+                Toggle();
+            }
+            else if (Input.GetKeyDown(Action_EnterCheat))
+            {
+                SubmitCommand();
+            }
+        }
 
-    }
+        [System.Diagnostics.Conditional("ENABLE_CHEATS")]
+        public virtual void SubmitCommand()
+        {
 
-    protected MethodInstance GetcommandInstances(string command)
-    {
-        if (string.IsNullOrEmpty(command) ||
-            !CheatController.Cheats.ContainsKey(command))
-            return null;
+        }
 
-        return CheatController.Cheats[command];
-    }
+        protected MethodInstance GetcommandInstances(string command)
+        {
+            if (string.IsNullOrEmpty(command) ||
+                !CheatController.Cheats.ContainsKey(command))
+                return null;
 
-    [CheatCode("help", "Displays help for commands")]
-    protected virtual void CheatsHelp()
-    {
-    }
+            return CheatController.Cheats[command];
+        }
 
-    protected virtual void Toggle()
-    {
-        show = !show;
+        [CheatCode("help", "Displays help for commands", "help")]
+        protected virtual void CheatsHelp()
+        {
+        }
+
+        [System.Diagnostics.Conditional("ENABLE_CHEATS")]
+        protected virtual void Toggle()
+        {
+            show = !show;
+        }
     }
 }

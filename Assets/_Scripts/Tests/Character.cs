@@ -1,11 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityCheatConsole;
 
 public class Character : MonoBehaviour
 {
     [SerializeField] int maxHP = 100;
     [SerializeField] int currentHP;
+
+    private int currentExperience = 0;
 
     private void OnEnable()
     {
@@ -33,9 +36,16 @@ public class Character : MonoBehaviour
         
     }
 
-    [CheatCode("damage", "deals damage to character")]
+    [CheatCode("damage", "deals damage to character", "damage.{instance}#intAmount")]
     public void Damage(int amount)
     {
         currentHP -= amount;
     }
+
+    [CheatCode("add_exp", "add experience to character", "add_exp.{instance}#intAmount")]
+    public void GainExperience(int amount)
+    {
+        currentExperience += amount;
+    }
+
 }

@@ -2,15 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "New Theme", menuName = "CheatConsole/Themes/New")]
-public class ThemeSO : ScriptableObject
+
+namespace UnityCheatConsole
 {
-    public Color Background;
-    public Color Primary;
-    public Color Secondary;
-    public Color CommandInput;
-    public Color CommandPlaceHolder;
-    public Color CommandOutput;
-    public Color CommandError;
-    public Color CommandExecuted;
+    [CreateAssetMenu(fileName = "New Theme", menuName = "CheatConsole/Themes/New")]
+    public class ThemeSO : ScriptableObject
+    {
+        public Color Background;
+        public Color Primary;
+        public Color Secondary;
+        public Color CommandInput;
+        public Color CommandPlaceHolder;
+        public Color CommandOutput;
+        public Color CommandError;
+        public Color CommandExecuted;
+    }
 }
