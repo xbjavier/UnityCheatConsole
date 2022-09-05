@@ -71,4 +71,9 @@ The theme will be passed on to the GameObjects with the following component atta
 ![image](https://user-images.githubusercontent.com/96312200/188338740-b33f05d6-4e3d-4c2e-adca-b267ef24ea1f.png)
 
 
+## Scripting Define Symbols
 
+Also the last step to get all this working is to add a define symbol: "ENABLE_CHEATS"
+![image](https://user-images.githubusercontent.com/96312200/188347494-a1a17f78-e80a-4620-aed7-6f27b4d7f749.png)
+
+this last part is great because if you want to disable all of this you just have to remove the symbol and that's it, no need to go and comment code or anything like that.
