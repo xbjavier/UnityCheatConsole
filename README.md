@@ -8,6 +8,7 @@ If you have any comments, issues or suggestion please write me to hello@rguajard
 
 ## How to install
 Just download the unitypackage and open it from unity or double click to get Unity open it for you.
+
 https://github.com/xbjavier/UnityCheatConsole/releases
 
 ## How to use
@@ -15,6 +16,7 @@ https://github.com/xbjavier/UnityCheatConsole/releases
 ### Scripting Define Symbols
 
 First to get all this working is to add a define symbol: "ENABLE_CHEATS"
+
 ![image](https://user-images.githubusercontent.com/96312200/188347494-a1a17f78-e80a-4620-aed7-6f27b4d7f749.png)
 
 Then you need to add the prefab called: "CheatsConsole" to your scene.
