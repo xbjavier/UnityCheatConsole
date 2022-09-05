@@ -68,11 +68,7 @@ namespace UnityCheatConsole
                     if (data.AttributeType != typeof(CheatCode)) continue;
 
                     string id = data.ConstructorArguments.ElementAt(0).Value.ToString();
-
-                    if (cheats.ContainsKey(id))
-                    {
-                        cheats.Remove(id);
-                    }
+                    cheats[id].Instances.Remove(behaviour);
                 }
             }
         }
