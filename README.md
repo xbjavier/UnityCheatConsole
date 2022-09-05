@@ -2,6 +2,10 @@
 
 This is a personal project that aims to have an easy way to input "cheats" into your unity game for easy test of different methods and components.
 
+If you find this useful and consider I deserve a coffee, you can buy me one here: https://ko-fi.com/xrguajardo :) 
+
+If you have any comments, issues or suggestion please write me to hello@rguajardo.com
+
 ## How to install
 Just download the unitypackage and open it from unity or double click to get Unity open it for you.
 https://github.com/xbjavier/UnityCheatConsole/releases
